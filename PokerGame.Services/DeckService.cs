@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using PokerGame.Data;
@@ -31,7 +32,9 @@ namespace PokerGame.Services
 
         public string DrawRandomCard()
         {
-            return string.Empty;
+            var rnd = new Random();
+            var result = ReadCard();
+            return result.Name[rnd.Next(1, 52)].ToString();
         }
     }
 
