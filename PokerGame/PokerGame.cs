@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using PokerGame.Data;
+﻿using System.Collections.Generic;
 using PokerGame.Services;
+using PokerGame.Data;
+using System.Linq;
+using System;
 
 namespace PokerGame
 {
@@ -14,12 +13,14 @@ namespace PokerGame
         {
 
             var deckService = new DeckService();
-            var numberOfUser = "";
+            var pokerHandService = new PokerHandService();
             var listOfPlayer = new List<Player>();
+            var tempRandomNumber = new List<string>();
+            bool added;
 
             Console.WriteLine(@"********************** POKER GAME *************************");
             Console.Write(@"How many Player: ");
-            numberOfUser = Console.ReadLine();
+            var numberOfUser = Console.ReadLine();
 
             Console.WriteLine();
             for (var i = 0; i < Convert.ToInt32(numberOfUser); i++)
@@ -38,33 +39,26 @@ namespace PokerGame
 
             listOfPlayer.ForEach(x =>
             {
-                x.Cards = new List<PlayerCards>();
+                x.Cards = new List<string>();
                 for (var i = 0; i < 5; i++)
                 {
-                    x.Cards.Add(new PlayerCards
+                    added = false;
+                    do
                     {
-                        CardNumber = deckService.DrawRandomCard()
-                    });
-
-                    //var added = false;
-                    //while (added != true)
-                    //{
-                    //    var newCard = deckService.DrawRandomCard();
-                    //    if (!listOfPlayer.Any(x => x.Cards.Select(y => y.CardNumber == newCard).FirstOrDefault()))
-                    //    {
-                    //        x.Cards.Add(new PlayerCards
-                    //        {
-                    //            CardNumber = deckService.DrawRandomCard()
-                    //        });
-                    //        added = true;
-                    //    }
-                    //}
+                        var newCard = deckService.DrawRandomCard();
+                        if (!tempRandomNumber.All(z => z != newCard)) continue;
+                        x.Cards.Add(newCard);
+                        tempRandomNumber.Add(newCard);
+                        added = true;
+                    } while (!added);
                 }
             });
 
             DisplayCard(listOfPlayer);
 
-            var listOfCards = deckService.DrawAllCard();
+            var sample = new List<string> { "AC", "10C", "JC", "QC", "KC"};
+            pokerHandService.CheckCards(sample);
+
 
         }
 
@@ -75,17 +69,11 @@ namespace PokerGame
                 Console.Write($@"{x.Name} Cards : ");
                 x.Cards.ForEach(y =>
                 {
-                    Console.Write(y.CardNumber);
+                    Console.Write(y);
                     Console.Write(" ");
                 });
                 Console.WriteLine();
             });
         }
-
-        public static bool CheckForDuplicate(Player player, string newCard)
-        {
-            return (player.Cards.Any(x => x.CardNumber == newCard));
-        }
-
     }
 }

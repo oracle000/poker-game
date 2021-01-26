@@ -9,7 +9,7 @@ namespace PokerGame.Services
 {
     public class DeckService : IDeckService
     {
-        public Cards ReadCard()
+        public Cards ReadCardFromJSON()
         {
             string jsonFromFile;
             var result = new Cards {Name = new List<string>()};
@@ -27,14 +27,14 @@ namespace PokerGame.Services
 
         public Cards DrawAllCard()
         {
-            return ReadCard();
+            return ReadCardFromJSON();
         }
 
         public string DrawRandomCard()
         {
             var rnd = new Random();
-            var result = ReadCard();
-            return result.Name[rnd.Next(1, 52)].ToString();
+            var result = ReadCardFromJSON();
+            return result.Name[rnd.Next(1, 52)];
         }
     }
 
