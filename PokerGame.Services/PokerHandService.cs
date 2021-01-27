@@ -1,103 +1,146 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using System.Text.RegularExpressions;
 using PokerGame.Data;
 
 namespace PokerGame.Services
 {
     public class PokerHandService : IPokerHandService
     {
-        public PokerHand CheckCards(List<string> cards)
+        public PokerHand? CheckCards(List<string> cards)
         {
+            var newCards = ModifyCards(cards);
 
-            // royal flush
-            var result = CheckRoyalFlush(cards);
+            if (CheckRoyalFlush(cards))
+                return PokerHand.RoyalFlush;
+            
+            if (CheckStraightFlush(newCards))
+                return PokerHand.StraightFlush;
+            
+            if (CheckFourOfaKind(newCards))
+                return PokerHand.FourOfAKind; 
 
-            // full house
-            CheckFullHouse(cards);
-
-            return PokerHand.Flush;
-        }
-
-        private static PokerHand? CheckRoyalFlush(List<string> cards)
-        {
-            string[] value = {"A", "K", "Q", "J", "10"};
-            var getSign = cards[0].Last();
-            var sameSign = cards.All(x => x.Last() == getSign);
-            var allMatch = true;
+            if (CheckFullHouse(newCards))
+                return PokerHand.FullHouse;
+            
+            if (CheckFlush(newCards))
+                return PokerHand.Flush;
             
 
-            cards.ForEach(x =>
+            return null;
+         
+        }
+
+        private static bool CheckRoyalFlush(List<string> cards) // done
+        {
+            string[] value = {"A", "K", "Q", "J", "10"}; 
+            var allMatch = true;
+
+            cards.ForEach(x => 
             {
-                if (!value.Any(x.Contains))
+                if (!value.Any(x.Contains)) // bug: if the cards has identical number
                     allMatch = false;
             });
 
-            if (sameSign && allMatch)
-                return PokerHand.RoyalFlush;
-            return null;
+            return CheckFlush(cards) && allMatch;
         }
 
-        public PokerHand CheckStraightFlush(List<string> cards)
+        public bool CheckStraightFlush(List<string> cards)
         {
-            var getSign = cards[0].Last();
-            var sameSign = cards.All(x => x.Last() == getSign);
+            var isStraight = false;
+            var tempValue = new List<int>();
 
-            return PokerHand.StraightFlush;
+            cards.ForEach(x =>
+            {
+                tempValue.Add(Convert.ToInt32(ConvertToNumber(x)));
+            });
+
+            var removeDup = tempValue.Distinct().ToList();
+            if (removeDup.Count == 5)
+            {
+                tempValue.Sort();
+
+                var checker = tempValue.SequenceEqual(Enumerable.Range(tempValue[0], tempValue.Count));
+                
+
+                if (checker)
+                    isStraight = true;
+            }
+            
+            return CheckFlush(cards) && isStraight;
         }
 
-        public PokerHand CheckFourOfaKind(List<string> cards)
+        public static bool CheckFourOfaKind(List<string> cards) 
         {
-
-
-            return PokerHand.FourOfAKind;
+            return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 4);
         }
 
-        private static PokerHand? CheckFullHouse(List<string> cards)
+        private static bool CheckFullHouse(List<string> cards)
         {
-            var getSign = cards[0].Last();
-            var sameSign = cards.All(x => x.Last() == getSign);
+            return CheckforTriple(cards) && CheckforDouble(cards);  
+        }
 
-            if(sameSign)
-                return PokerHand.FullHouse;
+        private static bool CheckFlush(IEnumerable<string> cards) 
+        {
+            return cards.GroupBy(x => x.Last()).Any(y => y.Count() == 5);
+        }
 
-            return null;
-        }
-        private static PokerHand? CheckFlush(List<string> cards)
-        {
-            var getSign = cards[0].Last();
-            var sameSign = cards.All(x => x.Last() == getSign);
 
-            if (sameSign)
-                return PokerHand.FullHouse;
-            return null;
-        }
-        public PokerHand CheckStraight(List<string> cards)
+        private static bool CheckforTriple(List<string> cards)
         {
-            return PokerHand.Straight;
+            return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 3);
         }
-        public PokerHand CheckThreeOfaKind(List<string> cards)
+
+        private static bool CheckforDouble(List<string> cards)
         {
-            return PokerHand.ThreeOfAKind;
+            return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 2);
         }
-        public PokerHand CheckTwoPair(List<string> cards)
+
+
+        private static List<string> ModifyCards(List<string> cards)
         {
-            return PokerHand.TwoPair;
+            var tempCard = new List<string>();
+
+            cards.ForEach(x =>
+            {
+                var tempValue = "";
+                switch (x.First())
+                {
+                    case 'A':
+                        tempValue = $"1{x.Last()}";
+                        break;
+                    case 'J':
+                        tempValue = $"11{x.Last()}";
+                        break;
+                    case 'Q':
+                        tempValue = $"12{x.Last()}";
+                        break;
+                    case 'K':
+                        tempValue = $"13{x.Last()}";
+                        break;
+                    default:
+                        tempValue = x;
+                        break;
+                }
+                tempCard.Add(tempValue);
+            });
+
+            return tempCard;
         }
-        public PokerHand CheckOnePair(List<string> cards)
+
+        private static string ConvertToNumber(string value)
         {
-            return PokerHand.OnePair;
-        }
-        public PokerHand CheckHighCard(List<string> cards)
-        {
-            return PokerHand.HighCard;
+            var number = Regex.Split(value, @"\D+");
+            return number.FirstOrDefault();
         }
     }
 
 
     internal interface IPokerHandService
     {
-        PokerHand CheckCards(List<string> cards);
+        PokerHand? CheckCards(List<string> cards);
     }
 }
 

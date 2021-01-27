@@ -47,8 +47,11 @@ namespace PokerGame
                     {
                         var newCard = deckService.DrawRandomCard();
                         if (!tempRandomNumber.All(z => z != newCard)) continue;
+                        
                         x.Cards.Add(newCard);
+                        
                         tempRandomNumber.Add(newCard);
+
                         added = true;
                     } while (!added);
                 }
@@ -56,7 +59,7 @@ namespace PokerGame
 
             DisplayCard(listOfPlayer);
 
-            var sample = new List<string> { "AC", "10C", "JC", "QC", "KC"};
+            var sample = new List<string> { "9S", "6S", "8S", "10S", "7S"};
             pokerHandService.CheckCards(sample);
 
 
