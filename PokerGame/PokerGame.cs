@@ -6,11 +6,9 @@ using System;
 
 namespace PokerGame
 {
-    public class PokerGame
+    public class PokerGame 
     {
 
-
-        
         static void Main(string[] args)
         {
 
@@ -67,6 +65,10 @@ namespace PokerGame
             });
 
             DisplayCard(listOfPlayer);
+
+
+            // identify who is the winner
+
         }
 
 

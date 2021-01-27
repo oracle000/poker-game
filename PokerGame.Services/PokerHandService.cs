@@ -37,10 +37,6 @@ namespace PokerGame.Services
             if (Pair(newCards))
                 return PokerHand.Pair;
 
-            //if (HighCard(newCards))
-            //    return PokerHand.HighCard;
-
-
             return PokerHand.HighCard;
         }
 
