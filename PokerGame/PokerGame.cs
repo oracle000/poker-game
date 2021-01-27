@@ -8,6 +8,8 @@ namespace PokerGame
 {
     public class PokerGame
     {
+
+
         
         static void Main(string[] args)
         {
@@ -35,6 +37,7 @@ namespace PokerGame
             
             Console.WriteLine();
             Console.WriteLine(@"Generate Cards for player");
+            Console.WriteLine("----------------------------------");
 
 
             listOfPlayer.ForEach(x =>
@@ -57,18 +60,21 @@ namespace PokerGame
                 }
             });
 
+
+            listOfPlayer.ForEach(x =>
+            {
+                x.PokerHand = pokerHandService.CheckCards(x.Cards);
+            });
+
             DisplayCard(listOfPlayer);
-
-            var sample = new List<string> { "9S", "6S", "8S", "10S", "7S"};
-            pokerHandService.CheckCards(sample);
-
-
         }
+
 
         public static void DisplayCard(List<Player> player)
         {
             player.ForEach(x =>
             {
+                
                 Console.Write($@"{x.Name} Cards : ");
                 x.Cards.ForEach(y =>
                 {
@@ -76,6 +82,9 @@ namespace PokerGame
                     Console.Write(" ");
                 });
                 Console.WriteLine();
+                Console.WriteLine($"Poker Hand : {x.PokerHand}");
+
+                Console.WriteLine("----------------------------------");
             });
         }
     }

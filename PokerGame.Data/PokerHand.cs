@@ -10,7 +10,8 @@
         Straight,
         ThreeOfAKind,
         TwoPair,
-        OnePair,
-        HighCard
+        Pair,
+        HighCard,
+        None
     }
 }
