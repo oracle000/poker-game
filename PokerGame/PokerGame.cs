@@ -15,6 +15,7 @@ namespace PokerGame
             var deckService = new DeckService();
             var pokerHandService = new PokerHandService();
             var listOfPlayer = new List<Player>();
+            var playerRanking = new List<Player>();
             var tempRandomNumber = new List<string>();
             bool added;
 
@@ -66,8 +67,15 @@ namespace PokerGame
 
             DisplayCard(listOfPlayer);
 
-
             // identify who is the winner
+
+
+            // identify based on rank
+
+            playerRanking = pokerHandService.RankPlayers(listOfPlayer);
+
+            Console.WriteLine("------------------------");
+            // DisplayCard(playerRanking);
 
         }
 
@@ -89,5 +97,7 @@ namespace PokerGame
                 Console.WriteLine("----------------------------------");
             });
         }
+
+       
     }
 }

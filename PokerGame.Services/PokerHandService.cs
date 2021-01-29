@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using System.Xml.XPath;
 using PokerGame.Data;
 
 namespace PokerGame.Services
@@ -28,6 +30,9 @@ namespace PokerGame.Services
             if (Flush(newCards))
                 return PokerHand.Flush;
 
+            if (Straight(newCards))
+                return PokerHand.Straight;
+
             if (ThreeofaKind(newCards))
                 return PokerHand.ThreeOfAKind;
 
@@ -38,6 +43,89 @@ namespace PokerGame.Services
                 return PokerHand.Pair;
 
             return PokerHand.HighCard;
+        }
+
+        public List<Player> RankPlayers(List<Player> players)
+        {
+            var winnerOrder = new List<Player>();
+            var tempPlayer = new List<Player>();
+
+            // sort by enum
+            var sorted = players.OrderBy(x => (int) (x.PokerHand)).ToList();
+            var index = 0;
+            sorted.ForEach(x =>
+            {
+                if (index == 0)
+                {
+                    if (x.PokerHand != sorted[index + 1].PokerHand)
+                    {
+                        winnerOrder.Add(x);
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+                    if (x.PokerHand == sorted[index + 1].PokerHand && x.PokerHand != sorted[index - 1].PokerHand)
+                    {
+                        tempPlayer.Add(x);
+                    } else if (x.PokerHand == sorted[index - 1].PokerHand && x.PokerHand != sorted[index + 1].PokerHand)
+                    {
+                        tempPlayer.Add(x);
+                    } else if (x.PokerHand != sorted[index - 1].PokerHand)
+                    {
+                        // process temp
+
+
+                        winnerOrder.Add(x);
+                    }
+                    
+                    else if (x.PokerHand == sorted[index - 1].PokerHand)
+                    {
+                        tempPlayer.Add(x);
+                    } else if (x.PokerHand != sorted[index + 1].PokerHand || sorted[index + 1] == null)
+                    {
+
+                    } else if (x.PokerHand != sorted[index + 1].PokerHand && x.PokerHand != sorted[index - 1].PokerHand)
+                    {
+                        winnerOrder.Add(x);
+                        
+                    }
+                }
+
+                
+                index++;
+            });
+
+
+            
+
+
+            var z = sorted.GroupBy(x => x.PokerHand).Where(highest => highest.Count() > 1).ToList();
+
+            // check for duplicate
+            var result = sorted.GroupBy(x => x.PokerHand).Where(y => y.Count() > 1).ToList();
+
+            // sort duplicate
+            result.ForEach(y =>
+            {
+                if (y.Key == PokerHand.HighCard)
+                {
+                    var listOfHighCard = y.OrderByDescending(x => TotalValue(x.Cards)).ToList();
+                    Console.WriteLine(listOfHighCard);
+                }
+
+                if (y.Key == PokerHand.Pair)
+                {
+                    Console.WriteLine("Pair here");
+                }
+
+            });
+
+
+            return sorted;
         }
 
         private static bool RoyalFlush(List<string> cards) // done
@@ -59,7 +147,7 @@ namespace PokerGame.Services
             return Flush(cards) && Straight(cards);
         }
 
-        private static bool FourOfaKind(List<string> cards) 
+        private static bool FourOfaKind(IEnumerable<string> cards) 
         {
             return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 4);
         }
@@ -74,12 +162,12 @@ namespace PokerGame.Services
             return cards.GroupBy(x => x.Last()).Any(y => y.Count() == 5);
         }
 
-        private static bool CheckforTriple(List<string> cards)
+        private static bool CheckforTriple(IEnumerable<string> cards)
         {
             return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 3);
         }
 
-        private static bool CheckforDouble(List<string> cards)
+        private static bool CheckforDouble(IEnumerable<string> cards)
         {
             return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 2);
         }
@@ -108,7 +196,7 @@ namespace PokerGame.Services
             return isStraight;
         }
 
-        private static bool ThreeofaKind(List<string> cards)
+        private static bool ThreeofaKind(IEnumerable<string> cards)
         {
             return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 3);
         }
@@ -138,14 +226,33 @@ namespace PokerGame.Services
             return (!string.IsNullOrEmpty(firstPair) && !string.IsNullOrEmpty(secondPair));
         }
 
-        private static bool Pair(List<string> cards)
+        private static bool Pair(IEnumerable<string> cards)
         {
             return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 2);
         }
 
-        private static bool OnePair(List<string> cards)
+
+        private static List<Player> RankDuplicateCard(List<Player> players)
         {
-            return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 2);
+            switch (players[0].PokerHand)
+            {
+                case PokerHand.HighCard:
+                    break;
+                case PokerHand.Pair:
+                    break;
+                case PokerHand.TwoPair:
+                    break;
+                case PokerHand.ThreeOfAKind:
+                    break;
+                case PokerHand.Straight:
+                    break;
+                case PokerHand.FullHouse:
+                    break;
+                case PokerHand.FourOfAKind:
+                    break;
+            }
+
+            return null;
         }
 
         private static List<string> ModifyCards(List<string> cards)
@@ -184,12 +291,26 @@ namespace PokerGame.Services
             var number = Regex.Split(value, @"\D+");
             return number.FirstOrDefault();
         }
+
+        private int TotalValue(List<string> cards)
+        {
+            var modify = ModifyCards(cards);
+            var totalAmount = 0;
+            modify.ForEach(x =>
+            {
+                totalAmount += Convert.ToInt32(x.Remove(x.Length - 1, 1));
+            });
+
+            return totalAmount;
+        }
     }
 
 
     internal interface IPokerHandService
     {
         PokerHand CheckCards(List<string> cards);
+
+        List<Player> RankPlayers(List<Player> players);
     }
 }
 
