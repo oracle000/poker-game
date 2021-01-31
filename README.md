@@ -14,10 +14,10 @@ Instruction
 
 
 Folder Structure
-PokerGame
-PokerGame.Data
-PokerGame.Services
-PokerGame.Test 
+- PokerGame
+- PokerGame.Data
+- PokerGame.Services
+- PokerGame.Test 
 
 
 Application runs on
