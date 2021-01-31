@@ -9,13 +9,16 @@ namespace PokerGame
 {
     public class PokerGame 
     {
-
+        /// <summary>
+        /// Main
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
             var service = ConfigureService();
-            var rankService = service.GetService<IRankCardService>();
+            var rankService = service.GetService<IWinningCardService>();
             var deckService = service.GetService<IDeckService>();
-            var pokerHandService = service.GetService<IPokerHandService>();
+            var CardRankService = service.GetService<ICardRankService>();
 
 
             var listOfPlayer = new List<Player>();
@@ -63,17 +66,10 @@ namespace PokerGame
                 }
             });
 
-            var seedPlayer = new Player
-            {
-                Cards = new List<string> {"5C", "AC", "4C", "2C", "3C"},
-                Name = "chris",
-            };
             
-            listOfPlayer.Add(seedPlayer);
-
             listOfPlayer.ForEach(x =>
             {
-                if (pokerHandService != null) x.PokerHand = pokerHandService.CheckCards(x.Cards);
+                if (CardRankService != null) x.PokerHand = CardRankService.CheckCards(x.Cards);
             });
 
             DisplayCards(listOfPlayer);
@@ -88,16 +84,24 @@ namespace PokerGame
         }
 
 
+        /// <summary>
+        /// Service Installer with Dependency Injection
+        /// </summary>
+        /// <returns></returns>
         private static ServiceProvider ConfigureService()
         {
             var service = new ServiceCollection()
                 .AddSingleton<IDeckService, DeckService>()
-                .AddSingleton<IPokerHandService, PokerHandService>(t => new PokerHandService(new ModificationService()))
-                .AddSingleton<IRankCardService, RankCardService>(t => new RankCardService(new ModificationService()))
+                .AddSingleton<ICardRankService, CardRankService>(t => new CardRankService(new ModificationService()))
+                .AddSingleton<IWinningCardService, WinningCardService>(t => new WinningCardService(new ModificationService()))
                 .BuildServiceProvider();
             return service;
         }
 
+        /// <summary>
+        /// Displaying of Multiple Cards
+        /// </summary>
+        /// <param name="player"></param>
         public static void DisplayCards(List<Player> player)
         {
             player.ForEach(x =>
@@ -111,6 +115,10 @@ namespace PokerGame
             });
         }
 
+        /// <summary>
+        /// Displaying of Card
+        /// </summary>
+        /// <param name="cards"></param>
         public static void DisplayPerCard(List<string> cards)
         {
             cards.ForEach(card =>

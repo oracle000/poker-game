@@ -5,14 +5,14 @@ using System;
 
 namespace PokerGame.Services
 {
-    public class PokerHandService : IPokerHandService
+    /// <summary>
+    /// CardRankService - In-charge of identifying what is the rank of the players Cards (Royal Flush, Flush ...
+    /// </summary>
+    public class CardRankService : ICardRankService
     {
         private readonly IModificationService _modificationService;
 
-        public PokerHandService()
-        { }
-
-        public PokerHandService(IModificationService modificationService)
+        public CardRankService(IModificationService modificationService)
         {
             _modificationService = modificationService;
         }
@@ -51,14 +51,14 @@ namespace PokerGame.Services
             return PokerHand.HighCard;
         }
 
-        private bool RoyalFlush(List<string> cards) // done
+        private bool RoyalFlush(List<string> cards) 
         {
             string[] value = {"A", "K", "Q", "J", "10"}; 
             var allMatch = true;
 
             cards.ForEach(x => 
             {
-                if (!value.Any(x.Contains)) // bug: if the cards has identical number
+                if (!value.Any(x.Contains))
                     allMatch = false;
             });
 
@@ -159,7 +159,7 @@ namespace PokerGame.Services
     }
 
 
-    public  interface IPokerHandService
+    public interface ICardRankService
     {
         PokerHand CheckCards(List<string> cards);
 

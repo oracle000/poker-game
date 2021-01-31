@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="PlayerCards.cs" />
     <Compile Remove="Players.cs" />
   </ItemGroup>
 

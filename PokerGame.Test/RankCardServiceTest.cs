@@ -6,7 +6,7 @@ using PokerGame.Data;
 namespace PokerGame.Test
 {
     [TestClass]
-    public class RankCardServiceTest
+    public class WinningCardServiceTest
     {
         private Player PlayerRoyalFlush;
         private Player PlayerStraightFlush;
@@ -20,7 +20,7 @@ namespace PokerGame.Test
         private Player PlayerHighCard;
 
 
-        private RankCardService _rankCardService;
+        private WinningCardService _WinningCardService;
         private IModificationService _modificationService;
         
 
@@ -28,7 +28,7 @@ namespace PokerGame.Test
         public void Initialize()
         {
             _modificationService = new ModificationService();
-            _rankCardService = new RankCardService(_modificationService);
+            _WinningCardService = new WinningCardService(_modificationService);
 
             #region player declaration
             PlayerRoyalFlush = new Player
@@ -116,7 +116,7 @@ namespace PokerGame.Test
                 PlayerTwoPair
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
             
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -133,7 +133,7 @@ namespace PokerGame.Test
                 PlayerRoyalFlush
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -151,7 +151,7 @@ namespace PokerGame.Test
                 PlayerFullHouse
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -169,7 +169,7 @@ namespace PokerGame.Test
                 PlayerFourofaKind
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -188,7 +188,7 @@ namespace PokerGame.Test
                 PlayerFullHouse
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -206,7 +206,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -225,7 +225,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -243,7 +243,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -261,7 +261,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -280,7 +280,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));
@@ -299,7 +299,7 @@ namespace PokerGame.Test
                 PlayerHighCard
             };
 
-            var result = _rankCardService.RankPlayer(sampleObj);
+            var result = _WinningCardService.RankPlayer(sampleObj);
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(List<Player>));

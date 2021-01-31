@@ -7,6 +7,9 @@ using System;
 
 namespace PokerGame.Services
 {
+    /// <summary>
+    /// DeckService - Managing the connection to cards.json and providing a random cards to the player
+    /// </summary>
     public class DeckService : IDeckService
     {
         private static Cards ReadCardFromJSON()
@@ -14,7 +17,7 @@ namespace PokerGame.Services
             string jsonFromFile;
             var result = new Cards {Name = new List<string>()};
             
-            using (var reader = new StreamReader($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/cards.json"))
+            using (var reader = new StreamReader($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Resources/cards.json"))
                 jsonFromFile = reader.ReadToEnd();
 
             JsonConvert.DeserializeObject<List<Card>>(jsonFromFile).ForEach(x =>

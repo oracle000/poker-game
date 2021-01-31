@@ -6,10 +6,14 @@ using static System.Convert;
 
 namespace PokerGame.Services
 {
-    public class RankCardService : IRankCardService
+
+    /// <summary>
+    /// WinningCards - Identify who has the strongest cards
+    /// </summary>
+    public class WinningCardService : IWinningCardService
     {
         private readonly IModificationService _modificationService;
-        public RankCardService(IModificationService modificationService)
+        public WinningCardService(IModificationService modificationService)
         {
             _modificationService = modificationService;
         }
@@ -22,6 +26,12 @@ namespace PokerGame.Services
 
             var sorted = players.OrderBy(x => (int)(x.PokerHand)).ToList();
 
+            
+            /***
+             * This code check for who has the highest cards and duplicates ranks.
+             * Players with duplicate rank will store in the temporary list and then will sort from highest to lowest
+             *
+             */
             var index = 0;
             sorted.ForEach(item =>
             {
@@ -35,7 +45,7 @@ namespace PokerGame.Services
                         break;
                     default:
                     {
-                        if (index != 0 && index == sorted.Count() -1) // end page
+                        if (index != 0 && index == sorted.Count() -1) 
                         {
                             if (item.PokerHand == sorted[index - 1].PokerHand)
                             {
@@ -141,7 +151,6 @@ namespace PokerGame.Services
             switch (players[0].PokerHand)
             {
                 case PokerHand.RoyalFlush:
-                    
                     break;
                 case PokerHand.StraightFlush:
                     sortedCards = StraightOrder(players);
@@ -259,8 +268,11 @@ namespace PokerGame.Services
             var list = new List<Player>{players[0]};
             foreach (var player in players)
             {
-                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 3).Select(z => z.Key).First();
-                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 3).Select(z => z.Key).First();
+                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                    .Where(y => y.Count() == 3).Select(z => z.Key).First();
+                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                    .Where(y => y.Count() == 3).Select(z => z.Key).First();
+
                 if (ToInt32(totalCost) > ToInt32(currentTotalCost))
                     list.Insert(0, player);
                 else
@@ -275,8 +287,10 @@ namespace PokerGame.Services
             var list = new List<Player>{players[0]};
             foreach (var player in players)
             {
-                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 2).Select(z => z.Key).ToList();
-                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 2).Select(z => z.Key).ToList();
+                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                        .Where(y => y.Count() == 2).Select(z => z.Key).ToList();
+                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                        .Where(y => y.Count() == 2).Select(z => z.Key).ToList();
 
                 if (totalCost.Sum(ToInt32) > currentTotalCost.Sum(ToInt32))
 
@@ -296,8 +310,10 @@ namespace PokerGame.Services
 
             foreach (var player in players.Skip(1))
             {
-                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 2).Select(z => z.Key).First();
-                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val)).Where(y => y.Count() == 2).Select(z => z.Key).First();
+                var totalCost = player.Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                    .Where(y => y.Count() == 2).Select(z => z.Key).First();
+                var currentTotalCost = list[0].Cards.GroupBy(val => _modificationService.ConvertToNumber(val))
+                                                    .Where(y => y.Count() == 2).Select(z => z.Key).First();
                 if (ToInt32(totalCost) > ToInt32(currentTotalCost))
                     list.Insert(0, player);
                 else
@@ -336,7 +352,7 @@ namespace PokerGame.Services
     }
 
 
-    public interface IRankCardService
+    public interface IWinningCardService
     {
         List<Player> RankPlayer(List<Player> players);
 
