@@ -1,15 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json;
 using PokerGame.Data;
 using System.IO;
+using System;
 
 namespace PokerGame.Services
 {
     public class DeckService : IDeckService
     {
-        public Cards ReadCardFromJSON()
+        private Cards ReadCardFromJSON()
         {
             string jsonFromFile;
             var result = new Cards {Name = new List<string>()};
@@ -25,11 +25,6 @@ namespace PokerGame.Services
             return result;
         }
 
-        public Cards DrawAllCard()
-        {
-            return ReadCardFromJSON();
-        }
-
         public string DrawRandomCard()
         {
             var rnd = new Random();
@@ -38,9 +33,9 @@ namespace PokerGame.Services
         }
     }
 
+
     public interface IDeckService
     {
-        Cards DrawAllCard();
         string DrawRandomCard();
     }
 }

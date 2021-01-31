@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using PokerGame.Services;
 using PokerGame.Data;
 using System.Linq;
@@ -9,11 +10,14 @@ namespace PokerGame
     public class PokerGame 
     {
 
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            var service = ConfigureService();
+            var rankService = service.GetService<IRankCardService>();
+            var deckService = service.GetService<IDeckService>();
+            var pokerHandService = service.GetService<IPokerHandService>();
 
-            var deckService = new DeckService();
-            var pokerHandService = new PokerHandService();
+
             var listOfPlayer = new List<Player>();
             var playerRanking = new List<Player>();
             var tempRandomNumber = new List<string>();
@@ -36,7 +40,7 @@ namespace PokerGame
             
             Console.WriteLine();
             Console.WriteLine(@"Generate Cards for player");
-            Console.WriteLine("----------------------------------");
+            Console.WriteLine(@"----------------------------------");
 
 
             listOfPlayer.ForEach(x =>
@@ -47,8 +51,8 @@ namespace PokerGame
                     added = false;
                     do
                     {
-                        var newCard = deckService.DrawRandomCard();
-                        if (!tempRandomNumber.All(z => z != newCard)) continue;
+                        var newCard = deckService?.DrawRandomCard();
+                        if (tempRandomNumber.Any(z => z == newCard)) continue;
                         
                         x.Cards.Add(newCard);
                         
@@ -59,45 +63,58 @@ namespace PokerGame
                 }
             });
 
+            
 
             listOfPlayer.ForEach(x =>
             {
-                x.PokerHand = pokerHandService.CheckCards(x.Cards);
+                if (pokerHandService != null) x.PokerHand = pokerHandService.CheckCards(x.Cards);
             });
 
-            DisplayCard(listOfPlayer);
+            DisplayCards(listOfPlayer);
 
-            // identify who is the winner
+            if (rankService != null) playerRanking = rankService.RankPlayer(listOfPlayer);
 
+            Console.WriteLine();
+            // DisplayCards(playerRanking);
 
-            // identify based on rank
-
-            playerRanking = pokerHandService.RankPlayers(listOfPlayer);
-
-            Console.WriteLine("------------------------");
-            // DisplayCard(playerRanking);
-
+            Console.WriteLine();
+            Console.WriteLine($@"Winner is : {playerRanking[0].Name} with {playerRanking[0].PokerHand} Cards");
+            DisplayPerCard(playerRanking[0].Cards);
+            Console.WriteLine();
         }
 
 
-        public static void DisplayCard(List<Player> player)
+        private static ServiceProvider ConfigureService()
+        {
+            var service = new ServiceCollection()
+                .AddSingleton<IDeckService, DeckService>()
+                .AddSingleton<IPokerHandService, PokerHandService>(t => new PokerHandService(new ModificationService()))
+                .AddSingleton<IRankCardService, RankCardService>(t => new RankCardService(new ModificationService()))
+                .BuildServiceProvider();
+            return service;
+        }
+
+        public static void DisplayCards(List<Player> player)
         {
             player.ForEach(x =>
             {
                 
                 Console.Write($@"{x.Name} Cards : ");
-                x.Cards.ForEach(y =>
-                {
-                    Console.Write(y);
-                    Console.Write(" ");
-                });
-                Console.WriteLine();
-                Console.WriteLine($"Poker Hand : {x.PokerHand}");
 
-                Console.WriteLine("----------------------------------");
+                DisplayPerCard(x.Cards);
+                Console.WriteLine();
+                Console.WriteLine($@"Poker Hand : {x.PokerHand}");
+                Console.WriteLine(@"----------------------------------");
             });
         }
 
+        public static void DisplayPerCard(List<string> cards)
+        {
+            cards.ForEach(card =>
+            {
+                Console.Write(card + " ");
+            });
+        }
        
     }
 }
