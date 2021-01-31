@@ -9,7 +9,7 @@ namespace PokerGame.Services
 {
     public class DeckService : IDeckService
     {
-        private Cards ReadCardFromJSON()
+        private static Cards ReadCardFromJSON()
         {
             string jsonFromFile;
             var result = new Cards {Name = new List<string>()};

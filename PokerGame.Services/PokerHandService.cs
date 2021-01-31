@@ -1,15 +1,16 @@
-﻿using System.Text.RegularExpressions;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using PokerGame.Data;
 using System.Linq;
 using System;
-using System.Xml.XPath;
 
 namespace PokerGame.Services
 {
     public class PokerHandService : IPokerHandService
     {
-        readonly IModificationService _modificationService;
+        private readonly IModificationService _modificationService;
+
+        public PokerHandService()
+        { }
 
         public PokerHandService(IModificationService modificationService)
         {
@@ -20,7 +21,6 @@ namespace PokerGame.Services
         {
             var newCards = _modificationService.ModifyCards(cards);
             
-
             if (RoyalFlush(cards))
                 return PokerHand.RoyalFlush;
 
@@ -73,7 +73,6 @@ namespace PokerGame.Services
         private  bool FourOfaKind(IEnumerable<string> cards) 
         {
             return cards.GroupBy(x => _modificationService.ConvertToNumber(x)).Any(y => y.Count() == 4);
-            //return cards.GroupBy(ConvertToNumber).Any(y => y.Count() == 4);
         }
 
         private bool FullHouse(List<string> cards)
@@ -98,12 +97,15 @@ namespace PokerGame.Services
 
         private bool Straight(List<string> cards)
         {
+
             var isStraight = false;
             var tempValue = new List<int>();
 
             cards.ForEach(x =>
             {
-                tempValue.Add(Convert.ToInt32(_modificationService.ConvertToNumber(x)));
+                tempValue.Add(x.Contains("14")
+                    ? Convert.ToInt32(_modificationService.ConvertToNumber($"1{x.Last()}"))
+                    : Convert.ToInt32(_modificationService.ConvertToNumber(x)));
             });
 
             var removeDup = tempValue.Distinct().ToList();
@@ -150,33 +152,9 @@ namespace PokerGame.Services
             return (!string.IsNullOrEmpty(firstPair) && !string.IsNullOrEmpty(secondPair));
         }
 
-        private bool Pair(IEnumerable<string> cards)
+        private bool Pair(List<string> cards)
         {
             return cards.GroupBy(x => _modificationService.ConvertToNumber(x)).Any(y => y.Count() == 2);
-        }
-
-
-        private List<Player> RankDuplicateCard(List<Player> players)
-        {
-            switch (players[0].PokerHand)
-            {
-                case PokerHand.HighCard:
-                    break;
-                case PokerHand.Pair:
-                    break;
-                case PokerHand.TwoPair:
-                    break;
-                case PokerHand.ThreeOfAKind:
-                    break;
-                case PokerHand.Straight:
-                    break;
-                case PokerHand.FullHouse:
-                    break;
-                case PokerHand.FourOfAKind:
-                    break;
-            }
-
-            return null;
         }
     }
 

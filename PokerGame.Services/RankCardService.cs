@@ -8,7 +8,7 @@ namespace PokerGame.Services
 {
     public class RankCardService : IRankCardService
     {
-        readonly IModificationService _modificationService;
+        private readonly IModificationService _modificationService;
         public RankCardService(IModificationService modificationService)
         {
             _modificationService = modificationService;

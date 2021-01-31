@@ -63,7 +63,13 @@ namespace PokerGame
                 }
             });
 
+            var seedPlayer = new Player
+            {
+                Cards = new List<string> {"5C", "AC", "4C", "2C", "3C"},
+                Name = "chris",
+            };
             
+            listOfPlayer.Add(seedPlayer);
 
             listOfPlayer.ForEach(x =>
             {
@@ -75,12 +81,10 @@ namespace PokerGame
             if (rankService != null) playerRanking = rankService.RankPlayer(listOfPlayer);
 
             Console.WriteLine();
-            // DisplayCards(playerRanking);
-
-            Console.WriteLine();
             Console.WriteLine($@"Winner is : {playerRanking[0].Name} with {playerRanking[0].PokerHand} Cards");
             DisplayPerCard(playerRanking[0].Cards);
             Console.WriteLine();
+            Console.ReadLine();
         }
 
 
@@ -100,7 +104,6 @@ namespace PokerGame
             {
                 
                 Console.Write($@"{x.Name} Cards : ");
-
                 DisplayPerCard(x.Cards);
                 Console.WriteLine();
                 Console.WriteLine($@"Poker Hand : {x.PokerHand}");
